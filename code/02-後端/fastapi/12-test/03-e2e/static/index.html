@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Playwright Test</title>
+    <script>
+        async function fetchData() {
+            const response = await fetch('/api/data');
+            const data = await response.json();
+            document.getElementById('output').innerText = data.message;
+        }
+    </script>
+</head>
+<body>
+    <h1>FastAPI + Playwright Test</h1>
+    <button onclick="fetchData()">Fetch Data</button>
+    <p id="output"></p>
+</body>
+</html>

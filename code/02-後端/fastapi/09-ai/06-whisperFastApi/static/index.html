@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Transcription</title>
+</head>
+<body>
+    <h1>Real-time Voice Transcription</h1>
+    <button id="start-btn">Start Recording</button>
+    <p id="transcription"></p>
+    <script>
+        let mediaRecorder;
+        let websocket;
+
+        // 開始錄音
+        document.getElementById('start-btn').onclick = () => {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+                websocket.close();
+            } else {
+                startRecording();
+            }
+        };
+
+        // 開始錄音功能
+        async function startRecording() {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = handleDataAvailable;
+            mediaRecorder.start();
+
+            // 連接 WebSocket
+            websocket = new WebSocket('ws://localhost:8000/ws');
+            websocket.onopen = () => console.log("Connected to WebSocket");
+            websocket.onmessage = (event) => {
+                // 顯示轉錄的文字
+                document.getElementById('transcription').innerText = event.data;
+            };
+        }
+
+        // 處理錄音數據
+        function handleDataAvailable(event) {
+            const audioData = event.data;
+            if (audioData.size > 0 && websocket.readyState === WebSocket.OPEN) {
+                websocket.send(audioData);
+            }
+        }
+    </script>
+</body>
+</html>

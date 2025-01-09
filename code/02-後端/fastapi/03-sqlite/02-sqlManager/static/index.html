@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Query Executor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <h1>SQL Query Executor</h1>
+    <p>輸入你的 SQL 查詢並執行。</p>
+    <textarea id="sqlQuery" placeholder="輸入 SQL 指令"></textarea>
+    <button id="executeBtn">執行</button>
+    <div id="output"></div>
+
+    <script>
+        document.getElementById("executeBtn").addEventListener("click", async () => {
+            const query = document.getElementById("sqlQuery").value;
+            const outputDiv = document.getElementById("output");
+
+            // 清空之前的結果
+            outputDiv.innerHTML = "";
+
+            try {
+                const response = await fetch("/api/execute_sql/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ query }),
+                });
+                // console.log('response=', response)
+
+                if (!response.ok) {
+                    throw new Error(await response.text());
+                }
+                const data = await response.json();
+                console.log('data=', data)
+                if (data.success && data.result && data.result.length > 0) {
+                    // 建立結果表格
+                    const table = document.createElement("table");
+                    const thead = document.createElement("thead");
+                    const tbody = document.createElement("tbody");
+
+                    // 表頭
+                    const headerRow = document.createElement("tr");
+                    Object.keys(data.result[0]).forEach((key) => {
+                        const th = document.createElement("th");
+                        th.textContent = key;
+                        headerRow.appendChild(th);
+                    });
+                    thead.appendChild(headerRow);
+
+                    // 表內容
+                    data.result.forEach((row) => {
+                        const tr = document.createElement("tr");
+                        Object.values(row).forEach((value) => {
+                            const td = document.createElement("td");
+                            td.textContent = value;
+                            tr.appendChild(td);
+                        });
+                        tbody.appendChild(tr);
+                    });
+
+                    table.appendChild(thead);
+                    table.appendChild(tbody);
+                    outputDiv.appendChild(table);
+                } else {
+                    outputDiv.textContent = "無結果或查詢返回空值。";
+                }
+            } catch (error) {
+                outputDiv.textContent = `發生錯誤：${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
+

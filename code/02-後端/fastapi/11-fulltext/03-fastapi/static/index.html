@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQLite FTS 搜尋應用</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        #results {
+            margin-top: 20px;
+        }
+        .result-item {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>全文檢索</h1>
+        <input type="text" id="search-query" placeholder="輸入搜尋關鍵字..." />
+        <button id="search-btn">搜尋</button>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // 監聽搜尋按鈕點擊事件
+        document.getElementById("search-btn").addEventListener("click", async () => {
+            const query = document.getElementById("search-query").value;
+            if (query.trim()) {
+                const response = await fetch(`/search/?query=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                displayResults(data.results);
+            }
+        });
+
+        // 顯示搜尋結果
+        function displayResults(results) {
+            const resultsContainer = document.getElementById("results");
+            resultsContainer.innerHTML = "";  // 清空現有結果
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = "<p>沒有找到匹配的結果。</p>";
+                return;
+            }
+
+            results.forEach(result => {
+                const resultElement = document.createElement("div");
+                resultElement.classList.add("result-item");
+                resultElement.innerHTML = `
+                    <strong>${result.title}</strong><br>
+                    <p>${result.content}</p>
+                `;
+                resultsContainer.appendChild(resultElement);
+            });
+        }
+    </script>
+</body>
+</html>

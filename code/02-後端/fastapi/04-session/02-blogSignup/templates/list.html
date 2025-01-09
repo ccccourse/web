@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+<!-- templates/list.html -->
+{% block content %}
+  <h1>Posts</h1>
+
+  <!-- 顯示用戶相關訊息 -->
+  <p>
+    {% if user %}
+      Welcome {{ user.username }}, You may 
+      <a href="/post/new">Create a Post</a> or 
+      <a href="/logout">Logout</a>!
+    {% else %}
+      <a href="/login">Login</a> to Create a Post!
+    {% endif %}
+  </p>
+
+  <!--<p>There are <strong>{{ posts | length }}</strong> posts!</p>-->
+
+  <!-- 顯示文章列表 -->
+  <ul id="posts">
+    {% for post in posts %}
+      <li>
+        <h2>{{ post.title }} -- by {{ post.username }}</h2>
+        <p><a href="/post/{{ post.id }}">Read post</a></p>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}

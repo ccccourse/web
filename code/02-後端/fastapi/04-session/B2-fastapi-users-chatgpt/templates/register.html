@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>註冊</title>
+</head>
+<body>
+    <h1>註冊</h1>
+    <form action="/register" method="post">
+        <label for="username">用戶名：</label>
+        <input type="text" name="username" required><br><br>
+
+        <label for="email">電子郵件：</label>
+        <input type="email" name="email" required><br><br>
+
+        <label for="password">密碼：</label>
+        <input type="password" name="password" required><br><br>
+
+        <button type="submit">註冊</button>
+    </form>
+    <p>已有帳戶？<a href="/login">登入</a></p>
+</body>
+</html>
